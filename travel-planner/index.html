@@ -32,7 +32,8 @@
         --accent: #60a5fa;
         --accent-ink: #0f172a;
         --ppm: 1.4;
-        --rail: 54px;
+        --colmin: 150px;
+        --rail: 44px;
         --pad: 10px;
       }
       [data-theme="light"] {
@@ -128,9 +129,12 @@
         transform: translateY(1px);
       }
 
-      .chips {
+      .chipsbar {
+        position: relative;
         flex: 1;
         min-width: 0;
+      }
+      .chips {
         display: flex;
         gap: 8px;
         overflow-x: auto;
@@ -140,6 +144,57 @@
       }
       .chips::-webkit-scrollbar {
         display: none;
+      }
+      /* edge fade + chevron: only shown when chips overflow that side */
+      .scroller {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 40px;
+        display: none;
+        align-items: center;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        z-index: 2;
+        color: var(--ink-soft);
+      }
+      .scroller.show {
+        display: flex;
+      }
+      .scroller.left {
+        left: 0;
+        justify-content: flex-start;
+        background: linear-gradient(to right, var(--bg) 45%, transparent);
+      }
+      .scroller.right {
+        right: 0;
+        justify-content: flex-end;
+        background: linear-gradient(to left, var(--bg) 45%, transparent);
+      }
+      .scroller .dot {
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        background: var(--panel);
+        border: 1px solid var(--rule);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+        color: var(--ink-soft);
+      }
+      .scroller svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .scroller:active .dot {
+        background: var(--panel-2);
+        color: var(--ink);
       }
       .chip {
         flex-shrink: 0;
@@ -182,6 +237,14 @@
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
       }
+      /* mouse drag-to-scroll feedback (see dragScroll()); !important and the
+         descendant selector keep the grab cursor over chips and entry cards
+         whose own cursor would otherwise win */
+      .dragging,
+      .dragging * {
+        cursor: grabbing !important;
+        user-select: none;
+      }
 
       .track::before {
         content: "";
@@ -207,7 +270,7 @@
       }
 
       .cwrap {
-        margin: 8px 0 20px;
+        margin: 0 0 20px;
       }
       .cgrid {
         display: grid;
@@ -261,7 +324,7 @@
       .track {
         position: relative;
         border-right: 1px solid var(--rule);
-        min-width: 150px;
+        min-width: var(--colmin, 150px);
       }
 
       .ev {
@@ -323,20 +386,10 @@
       .nowline {
         position: absolute;
         left: 0;
-        right: 0;
+        right: -1px; /* bridge the track's 1px border-right so the line stays continuous across columns */
         border-top: 2px solid #f43f5e;
-        z-index: 6;
+        z-index: 6; /* below the time rail (8); the rail paints its own segment so the line stays continuous across the gutter even when scrolled sideways */
         pointer-events: none;
-      }
-      .nowline::before {
-        content: "";
-        position: absolute;
-        left: -4px;
-        top: -5px;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #f43f5e;
       }
       .empty {
         padding: 64px 24px;
@@ -360,12 +413,26 @@
         border-radius: 999px;
         cursor: pointer;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        transition:
+          transform 0.25s ease,
+          opacity 0.25s ease;
       }
       .fab svg {
         display: block;
       }
       .fab:active {
         transform: translateY(1px);
+      }
+      /* slide off the right edge while scrolling; returns shortly after scroll stops */
+      .fab.hide {
+        transform: translateX(calc(100% + 18px));
+        opacity: 0;
+        pointer-events: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .fab {
+          transition: none;
+        }
       }
 
       .scrim {
@@ -459,10 +526,75 @@
         color: var(--accent-ink);
         border-color: var(--accent);
       }
-      .btn.danger {
+      .sheet-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .sheet-head h2 {
+        margin: 2px 0;
+      }
+      .headbtns {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+      .iconbtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        border: none;
         background: transparent;
+        color: var(--ink-soft);
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .iconbtn:active {
+        background: var(--panel);
+      }
+      .iconbtn svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .iconbtn.danger {
         color: #e11d48;
-        border-color: #fecdd3;
+      }
+      .drow {
+        display: flex;
+        gap: 12px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--rule);
+        font-size: 14px;
+      }
+      .drow:last-of-type {
+        border-bottom: none;
+      }
+      .dlabel {
+        flex: 0 0 84px;
+        color: var(--ink-faint);
+        font-size: 12px;
+        padding-top: 1px;
+      }
+      .dval {
+        flex: 1;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        word-break: break-word;
+      }
+      .swatch {
+        width: 11px;
+        height: 11px;
+        border-radius: 3px;
+        flex-shrink: 0;
       }
       .btn.ghost {
         background: transparent;
@@ -547,20 +679,142 @@
         font-weight: 700;
         margin: 14px 0 8px;
       }
+      .range {
+        width: 100%;
+        margin: 2px 0 4px;
+        accent-color: var(--accent);
+      }
+
+      /* prefix icons on the sheet action buttons (Close / Print) */
+      .sheetbtns .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+      }
+      .sheetbtns .btn svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* Copy floats over the preview textarea's top-right corner */
+      .previewwrap {
+        position: relative;
+      }
+      .copyover {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 10px;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ink);
+        background: var(--panel);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+      }
+      .copyover svg {
+        width: 14px;
+        height: 14px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* The Print button produces a plain text summary (the same content as
+         Share), not the on-screen grid: a hard copy to carry when the phone
+         dies. The visual grid prints badly (a full day spans pages and breaks
+         slice through entries), and a legible list is what is actually useful.
+         Hidden on screen; revealed and laid out by @media print below. */
+      .printout {
+        display: none;
+      }
+
+      @media print {
+        @page {
+          margin: 16mm;
+        }
+        /* set both: the page canvas comes from html, whose --bg is dark in the
+           dark theme; body alone leaves the dark colour around the printout */
+        html,
+        body {
+          height: auto;
+          overflow: visible;
+          background: #fff;
+          color: #000;
+        }
+        /* hide the live app and its sheets; print only the summary */
+        .app,
+        .scrim,
+        .sheet {
+          display: none !important;
+        }
+        .printout {
+          display: block;
+        }
+        .printout h1 {
+          font-size: 18pt;
+          margin: 0 0 12pt;
+        }
+        .printout pre {
+          margin: 0;
+          white-space: pre-wrap;
+          word-break: break-word;
+          font:
+            11pt / 1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          color: #000;
+        }
+      }
     </style>
   </head>
   <body data-theme="light">
     <div class="app">
       <header>
         <div class="headerrow">
-          <div class="chips" id="chips"></div>
+          <div class="chipsbar">
+            <button
+              class="scroller left"
+              id="chipsLeft"
+              aria-label="Scroll places left"
+              tabindex="-1"
+            >
+              <span class="dot"
+                ><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg
+              ></span>
+            </button>
+            <div class="chips" id="chips"></div>
+            <button
+              class="scroller right"
+              id="chipsRight"
+              aria-label="Scroll places right"
+              tabindex="-1"
+            >
+              <span class="dot"
+                ><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg
+              ></span>
+            </button>
+          </div>
           <div class="iconrow">
-            <button class="icon" id="shareBtn" aria-label="Share">
+            <button class="icon" id="shareBtn" aria-label="Print or share">
               <svg viewBox="0 0 24 24">
-                <circle cx="18" cy="5" r="3" />
-                <circle cx="6" cy="12" r="3" />
-                <circle cx="18" cy="19" r="3" />
-                <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+                <path d="M6 9V3h12v6" />
+                <path
+                  d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"
+                />
+                <rect x="6" y="14" width="12" height="7" rx="1" />
               </svg>
             </button>
             <button class="icon" id="settingsBtn" aria-label="Settings">
@@ -591,7 +845,39 @@
       </button>
     </div>
 
+    <!-- PRINT (a plain text summary, same content as Share; see @media print) -->
+    <div class="printout" id="printout" aria-hidden="true">
+      <h1>Travel Planner</h1>
+      <pre id="printoutBody"></pre>
+    </div>
+
     <div class="scrim" id="scrim"></div>
+
+    <!-- DETAILS (read-only) -->
+    <div class="sheet" id="evDetail">
+      <div class="sheet-head">
+        <h2 id="dTitle"></h2>
+        <div class="headbtns">
+          <button class="iconbtn" id="dEdit" aria-label="Edit">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+          </button>
+          <button class="iconbtn danger" id="dDelete" aria-label="Delete">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 6h18" />
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div id="dBody"></div>
+      <div class="sheetbtns" style="margin-top: 14px">
+        <button class="btn ghost" id="dClose">Close</button>
+      </div>
+    </div>
 
     <!-- ENTRY -->
     <div class="sheet" id="evSheet">
@@ -634,11 +920,8 @@
         />
       </div>
       <div class="sheetbtns">
-        <button class="btn danger" id="evDelete" style="display: none">
-          Delete
-        </button>
-        <button class="btn ghost" id="evCancel">Cancel</button>
         <button class="btn primary" id="evSave">Save</button>
+        <button class="btn ghost" id="evCancel">Cancel</button>
       </div>
       <div class="hint">
         Leave “Arrives” blank to just mark a departure time.
@@ -647,7 +930,23 @@
 
     <!-- PLACE -->
     <div class="sheet" id="placeSheet">
-      <h2 id="placeTitle">Add place</h2>
+      <div class="sheet-head">
+        <h2 id="placeTitle">Add place</h2>
+        <div class="headbtns">
+          <button
+            class="iconbtn danger"
+            id="placeDelete"
+            aria-label="Delete"
+            style="display: none"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M3 6h18" />
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            </svg>
+          </button>
+        </div>
+      </div>
       <div class="field">
         <label for="pLabel">Place name</label>
         <input
@@ -658,11 +957,8 @@
         />
       </div>
       <div class="sheetbtns">
-        <button class="btn danger" id="placeDelete" style="display: none">
-          Delete place
-        </button>
-        <button class="btn ghost" id="placeCancel">Cancel</button>
         <button class="btn primary" id="placeSave">Save</button>
+        <button class="btn ghost" id="placeCancel">Cancel</button>
       </div>
       <div class="hint">
         Tap a column heading any time to rename or remove a place.
@@ -677,6 +973,26 @@
         <button data-theme="light">Light</button
         ><button data-theme="dark">Dark</button>
       </div>
+      <div class="sub">Spacing</div>
+      <input
+        type="range"
+        id="ppmRange"
+        class="range"
+        min="0.8"
+        max="2.4"
+        step="0.1"
+        aria-label="Row spacing"
+      />
+      <div class="sub">Column width</div>
+      <input
+        type="range"
+        id="colwRange"
+        class="range"
+        min="140"
+        max="360"
+        step="10"
+        aria-label="Minimum column width"
+      />
       <div class="sub">Types &amp; colours</div>
       <div id="typeList"></div>
       <button class="addtype" id="addType">+ Add type</button>
@@ -696,11 +1012,32 @@
 
     <!-- SHARE -->
     <div class="sheet" id="shareSheet">
-      <h2>Share</h2>
-      <div class="field"><textarea id="shareText" readonly></textarea></div>
+      <h2>Print</h2>
+      <div class="field previewwrap">
+        <textarea id="shareText" readonly></textarea>
+        <button class="copyover" id="copyBtn" aria-label="Copy to clipboard">
+          <svg viewBox="0 0 24 24">
+            <rect x="9" y="9" width="11" height="11" rx="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          <span id="copyLabel">Copy</span>
+        </button>
+      </div>
       <div class="sheetbtns">
-        <button class="btn ghost" id="shareCancel">Close</button>
-        <button class="btn primary" id="copyBtn">Copy</button>
+        <button class="btn primary" id="printBtn">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 9V3h12v6" />
+            <path
+              d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"
+            />
+            <rect x="6" y="14" width="12" height="7" rx="1" />
+          </svg>
+          Print
+        </button>
+        <button class="btn ghost" id="shareCancel">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          Close
+        </button>
       </div>
     </div>
 
@@ -719,10 +1056,21 @@
         Export backup is the real safeguard against a cleared cache or new phone.
       =========================================================================== */
       const DAY_MIN = 24 * 60;
-      const ppm =
-        parseFloat(
-          getComputedStyle(document.documentElement).getPropertyValue("--ppm"),
-        ) || 1.4;
+      // Vertical scale in px/min, adjustable via the Settings slider. Driven by
+      // state.ppm and pushed into the --ppm CSS var by applyScale(), so the
+      // gridline background stays aligned with the JS-positioned events,
+      // labels and now-line. Read once into a `let` and reassigned on change.
+      const MIN_PPM = 0.8,
+        MAX_PPM = 2.4,
+        DEFAULT_PPM = 1.4;
+      let ppm = DEFAULT_PPM;
+      // Minimum column width in px (Settings slider). Columns flex (1fr) above
+      // this; once they'd shrink below it the grid overflows into horizontal
+      // scroll. Used directly in the render() grid template (no CSS var needed).
+      const MIN_COLW = 140,
+        MAX_COLW = 360,
+        DEFAULT_COLW = 150;
+      let colw = DEFAULT_COLW;
       // top/bottom breathing room (must match --pad in CSS so labels/gridlines align)
       const PAD =
         parseFloat(
@@ -731,12 +1079,14 @@
 
       // Bump SCHEMA whenever the persisted shape changes, and add a matching step in
       // migrate() below. Data with no `schema` predates this field and counts as 0.
-      const SCHEMA = 1;
+      const SCHEMA = 2;
       function seed() {
         return {
           schema: SCHEMA,
           seq: 1,
           theme: "light",
+          ppm: DEFAULT_PPM,
+          colw: DEFAULT_COLW,
           types: [
             { id: "train", label: "Train", color: "#60a5fa" },
             { id: "bus", label: "Bus", color: "#34d399" },
@@ -748,16 +1098,29 @@
           events: [],
         };
       }
-      // Forward-only, one-time migrations. v1 is the current baseline, so there is
-      // nothing to upgrade yet. When the persisted shape next changes, bump SCHEMA and
-      // add a step here; never remove a step (a user may jump several versions at once):
-      //
-      //   if(s.schema<2){ (s.places||[]).forEach(p=>{ if(p.foo===undefined) p.foo=…; }); }
-      //
-      // This is pre-1.0 alpha, so unversioned data isn't supported: it's just stamped v1.
-      function migrate(s) {
-        s.schema = SCHEMA;
+      // Places (and therefore both chips and columns, which follow array order)
+      // are always shown alphabetically, so keep the array sorted whenever it
+      // changes. This is an ordering normalisation, not a shape change, so it
+      // is not a versioned migration step and needs no SCHEMA bump.
+      function sortPlaces(s) {
+        s.places.sort((a, b) =>
+          a.label.localeCompare(b.label, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          }),
+        );
         return s;
+      }
+      // Forward-only, one-time migrations. Never remove a step (a user may jump
+      // several versions at once, so every step must still run, in order).
+      function migrate(s) {
+        if (s.schema < 2) {
+          // v2 added the adjustable layout knobs; default them for old saves.
+          if (typeof s.ppm !== "number") s.ppm = DEFAULT_PPM;
+          if (typeof s.colw !== "number") s.colw = DEFAULT_COLW;
+        }
+        s.schema = SCHEMA;
+        return sortPlaces(s); // normalise order on every load and import
       }
       let state = seed();
       let nextId = 1;
@@ -783,6 +1146,15 @@
         } catch (e) {
           /* private mode / quota: keep working in-memory this session */
         }
+      }
+      // Sync runtime layout knobs from state: `ppm` (also pushed into the --ppm
+      // CSS var so the gridline background tracks it) and `colw`. Run on
+      // load/import and whenever a slider changes, before render().
+      function applyScale() {
+        ppm = Math.min(MAX_PPM, Math.max(MIN_PPM, state.ppm || DEFAULT_PPM));
+        colw = Math.min(MAX_COLW, Math.max(MIN_COLW, state.colw || DEFAULT_COLW));
+        document.documentElement.style.setProperty("--ppm", ppm);
+        document.documentElement.style.setProperty("--colmin", colw + "px");
       }
 
       /* ===== helpers ===== */
@@ -878,7 +1250,7 @@
           const tt = e.end ? `${e.start}–${e.end}` : e.start;
           h += `<div class="ev ${point ? "point" : ""} ${short ? "short" : ""}" data-id="${e.id}"
       style="top:${s * ppm + PAD}px;height:${ht}px;left:calc(${left}% + ${it.col ? 3 : 0}px);width:calc(${w}% - ${it.cols > 1 ? 6 : 0}px);
-      background:${hexA(c, 0.16)};border-color:${hexA(c, 0.55)};border-left-color:${c}">
+      background:color-mix(in srgb, ${c} 16%, var(--bg));border-color:${hexA(c, 0.55)};border-left-color:${c}">
       <div class="t">${tt}</div><div class="n">${esc(e.name)}</div>
       ${!short && !point && e.note ? `<div class="note">${esc(e.note)}</div>` : ""}</div>`;
         }
@@ -919,6 +1291,7 @@
             )
             .join("") +
           `<button class="chip add" id="chipAdd">+ Place</button>`;
+        updateChipScroll();
 
         const H = DAY_MIN * ppm + PAD * 2,
           v = $("#view"),
@@ -934,7 +1307,7 @@
         }
 
         const n = shown.length;
-        let g = `<div class="cwrap"><div class="cgrid" style="grid-template-columns:var(--rail) repeat(${n},minmax(150px,1fr))">`;
+        let g = `<div class="cwrap"><div class="cgrid" style="grid-template-columns:var(--rail) repeat(${n},minmax(var(--colmin),1fr))">`;
         g += `<div class="chead ctime">Time</div>`;
         g += shown
           .map(
@@ -942,7 +1315,7 @@
               `<div class="chead" data-place="${p.id}">${esc(p.label)}</div>`,
           )
           .join("");
-        g += `<div class="crail" style="height:${H}px">${railHTML()}</div>`;
+        g += `<div class="crail" style="height:${H}px">${railHTML()}${nowLine()}</div>`;
         g += shown
           .map(
             (p) =>
@@ -964,13 +1337,14 @@
       }
 
       /* ===== sheets ===== */
+      const SHEETS = ["evDetail", "evSheet", "placeSheet", "setSheet", "shareSheet"];
       function closeSheets() {
         $("#scrim").classList.remove("open");
-        ["evSheet", "placeSheet", "setSheet", "shareSheet"].forEach((id) =>
-          $("#" + id).classList.remove("open"),
-        );
+        SHEETS.forEach((id) => $("#" + id).classList.remove("open"));
       }
       function openSheet(id) {
+        // only one sheet open at a time, so switching (e.g. Details → Edit) is clean
+        SHEETS.forEach((s) => $("#" + s).classList.remove("open"));
         $("#scrim").classList.add("open");
         $("#" + id).classList.add("open");
       }
@@ -993,6 +1367,75 @@
         render();
       };
 
+      /* Mouse drag-to-scroll. Touch and pen keep their native momentum scroll;
+         this only brings a mouse up to parity. A drag past the slop threshold
+         swallows the trailing click (capture phase) so it never toggles a chip
+         or opens an entry/place. Used for the chip bar (x) and for the grid via
+         #scroll, which is the scroll container and the click ancestor of #view
+         (x and y). */
+      function dragScroll(el, axes) {
+        let down = false,
+          moved = false,
+          sx = 0,
+          sy = 0,
+          sl = 0,
+          st = 0;
+        el.addEventListener("pointerdown", (e) => {
+          if (e.pointerType !== "mouse") return; // leave touch/pen to native scroll
+          if (e.button !== 0) return; // left button only; leave middle-click autoscroll / right-click alone
+          down = true;
+          moved = false;
+          sx = e.clientX;
+          sy = e.clientY;
+          sl = el.scrollLeft;
+          st = el.scrollTop;
+          el.classList.add("dragging"); // cursor: grabbing while dragging
+          e.preventDefault(); // don't start a text selection while dragging
+        });
+        el.addEventListener("pointermove", (e) => {
+          if (!down) return;
+          const dx = e.clientX - sx,
+            dy = e.clientY - sy;
+          if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+          if (axes.x) el.scrollLeft = sl - dx;
+          if (axes.y) el.scrollTop = st - dy;
+        });
+        const end = () => {
+          down = false;
+          el.classList.remove("dragging");
+        };
+        el.addEventListener("pointerup", end);
+        el.addEventListener("pointerleave", end);
+        el.addEventListener(
+          "click",
+          (e) => {
+            if (moved) e.stopPropagation(); // capture-phase: beat the click handlers
+          },
+          true,
+        );
+      }
+      dragScroll($("#chips"), { x: true });
+      dragScroll($("#scroll"), { x: true, y: true });
+
+      /* chips: edge indicators. Show a fading chevron on whichever side still
+         has hidden chips; tapping it scrolls that end fully into view.
+         updateChipScroll() is also called at the end of render(). */
+      function updateChipScroll() {
+        const row = $("#chips"),
+          max = row.scrollWidth - row.clientWidth;
+        $("#chipsLeft").classList.toggle("show", row.scrollLeft > 1);
+        $("#chipsRight").classList.toggle("show", row.scrollLeft < max - 1);
+      }
+      (() => {
+        const row = $("#chips");
+        row.addEventListener("scroll", updateChipScroll, { passive: true });
+        addEventListener("resize", updateChipScroll);
+        $("#chipsLeft").onclick = () =>
+          row.scrollTo({ left: 0, behavior: "smooth" });
+        $("#chipsRight").onclick = () =>
+          row.scrollTo({ left: row.scrollWidth, behavior: "smooth" });
+      })();
+
       /* entry */
       let editId = null;
       const opts = (arr, sel) =>
@@ -1005,7 +1448,6 @@
       function openEntry(ev) {
         editId = ev ? ev.id : null;
         $("#evTitle").textContent = ev ? "Edit entry" : "Add entry";
-        $("#evDelete").style.display = ev ? "block" : "none";
         const defPlace = ev
           ? ev.placeId
           : shownPlaces()[0]?.id || state.places[0]?.id;
@@ -1027,11 +1469,17 @@
         }
         openEntry(null);
       };
-      $("#evCancel").onclick = closeSheets;
+      // editing came from the Details sheet, so return there; a brand-new entry has nowhere to go but the grid
+      const backFromEntry = () => {
+        const ev = editId && state.events.find((e) => e.id === editId);
+        if (ev) openDetail(ev);
+        else closeSheets();
+      };
+      $("#evCancel").onclick = backFromEntry;
       $("#view").onclick = (e) => {
         const card = e.target.closest(".ev");
         if (card) {
-          openEntry(state.events.find((x) => x.id === card.dataset.id));
+          openDetail(state.events.find((x) => x.id === card.dataset.id));
           return;
         }
         const head = e.target.closest(".chead[data-place]");
@@ -1052,7 +1500,8 @@
           end: $("#fEnd").value || "",
           note: $("#fNote").value.trim(),
         };
-        if (editId)
+        const editing = !!editId;
+        if (editing)
           Object.assign(
             state.events.find((e) => e.id === editId),
             d,
@@ -1060,11 +1509,37 @@
         else state.events.push({ id: "ev" + nextId++, ...d });
         placeOf(d.placeId).shown = true; // make sure its column is visible
         save();
-        closeSheets();
         render();
+        if (editing) backFromEntry();
+        else closeSheets();
       };
-      $("#evDelete").onclick = () => {
-        state.events = state.events.filter((e) => e.id !== editId);
+      /* read-only details */
+      let detailId = null;
+      function openDetail(ev) {
+        if (!ev) return;
+        detailId = ev.id;
+        const ty = typeOf(ev.typeId),
+          p = placeOf(ev.placeId);
+        const row = (label, val) =>
+          `<div class="drow"><div class="dlabel">${label}</div><div class="dval">${val}</div></div>`;
+        $("#dTitle").textContent = ev.name;
+        let h = row("Place", esc(p ? p.label : "—"));
+        h += row("Departs", esc(ev.start));
+        if (ev.end) h += row("Arrives", esc(ev.end));
+        h += row(
+          "Type",
+          `<span class="swatch" style="background:${safeHex(ty.color)}"></span>${esc(ty.label)}`,
+        );
+        if (ev.note) h += row("Note", esc(ev.note));
+        $("#dBody").innerHTML = h;
+        openSheet("evDetail");
+      }
+      $("#dClose").onclick = closeSheets;
+      $("#dEdit").onclick = () =>
+        openEntry(state.events.find((e) => e.id === detailId));
+      $("#dDelete").onclick = () => {
+        if (!confirm("Delete this entry?")) return;
+        state.events = state.events.filter((e) => e.id !== detailId);
         save();
         closeSheets();
         render();
@@ -1092,6 +1567,7 @@
         } else {
           state.places.push({ id: "pl" + nextId++, label, shown: true });
         }
+        sortPlaces(state); // keep chips and columns alphabetical
         save();
         closeSheets();
         render();
@@ -1142,9 +1618,27 @@
           .forEach((b) =>
             b.classList.toggle("on", b.dataset.theme === state.theme),
           );
+        $("#ppmRange").value = state.ppm || DEFAULT_PPM;
+        $("#colwRange").value = state.colw || DEFAULT_COLW;
         typeDraft = state.types.map((t) => ({ ...t }));
         renderTypeRows();
         openSheet("setSheet");
+      };
+      $("#ppmRange").oninput = (e) => {
+        const sc = $("#scroll");
+        // keep whatever time is at the top of the viewport pinned while zooming
+        const anchorMin = (sc.scrollTop - PAD) / ppm;
+        state.ppm = parseFloat(e.target.value);
+        applyScale();
+        save();
+        render();
+        sc.scrollTop = anchorMin * ppm + PAD;
+      };
+      $("#colwRange").oninput = (e) => {
+        state.colw = parseFloat(e.target.value);
+        applyScale();
+        save();
+        render(); // column width doesn't affect vertical position, so no scroll anchoring
       };
       $("#themeSeg")
         .querySelectorAll("button")
@@ -1190,6 +1684,10 @@
         });
         return out.join("\n").trim();
       }
+      $("#printBtn").onclick = () => {
+        $("#printoutBody").textContent = buildShare();
+        window.print();
+      };
       $("#shareBtn").onclick = () => {
         $("#shareText").value = buildShare();
         openSheet("shareSheet");
@@ -1197,7 +1695,7 @@
       $("#shareCancel").onclick = closeSheets;
       $("#copyBtn").onclick = () => {
         const ta = $("#shareText"),
-          btn = $("#copyBtn");
+          label = $("#copyLabel");
         ta.select();
         try {
           navigator.clipboard.writeText(ta.value);
@@ -1206,9 +1704,9 @@
             document.execCommand("copy");
           } catch {}
         }
-        btn.textContent = "Copied";
+        label.textContent = "Copied";
         setTimeout(() => {
-          btn.textContent = "Copy";
+          label.textContent = "Copy";
         }, 1400);
       };
 
@@ -1237,6 +1735,7 @@
             }
             state = migrate(d);
             reseed(state);
+            applyScale();
             save();
             closeSheets();
             render();
@@ -1249,8 +1748,25 @@
 
       state = load();
       reseed(state);
+      applyScale();
       render(true);
       setInterval(tickNow, 60000); // keep the "now" line drifting down through the day
+
+      // hide the add button while the grid is being scrolled, bring it back
+      // ~1.2s after the last scroll event so it never sits over content mid-scroll
+      (() => {
+        const fab = $("#addBtn");
+        let idle;
+        $("#scroll").addEventListener(
+          "scroll",
+          () => {
+            fab.classList.add("hide");
+            clearTimeout(idle);
+            idle = setTimeout(() => fab.classList.remove("hide"), 1200);
+          },
+          { passive: true },
+        );
+      })();
 
       // best-effort: ask the browser not to evict our data under storage pressure
       if (navigator.storage?.persist)
