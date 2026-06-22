@@ -3,7 +3,7 @@
    touches the rest of the site. The app is a single self-contained HTML file,
    so the "shell" is just this directory's index document. Bump CACHE to push
    a new version to devices that have the old one cached. */
-const CACHE = 'travel-planner-v3';
+const CACHE = 'travel-planner-v4';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'
