@@ -1,1 +1,0 @@
-import{_ as s,c as o,o as r,Y as n}from"./BjSar4mz.js";const t={};function c(e,a){return r(),o("ul",null,[n(e.$slots,"default")])}const _=Object.assign(s(t,[["render",c]]),{__name:"ProseUl"});export{_ as default};
