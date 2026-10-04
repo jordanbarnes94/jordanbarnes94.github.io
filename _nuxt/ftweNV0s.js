@@ -1,0 +1,1 @@
+const t=[{id:"character",label:"Characters"},{id:"faction",label:"Factions"},{id:"location",label:"Locations"},{id:"quest",label:"Quests"},{id:"item",label:"Items"},{id:"topic",label:"Topics"},{id:"session",label:"Sessions"}];function l(a,i,s=""){return a.filter(e=>!i.has(e.id)||e.updatedAt>s)}export{t as W,l as u};
