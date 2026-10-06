@@ -1,0 +1,1 @@
+import{_ as s,c as o,o as r,a1 as n}from"./BIIDhxdR.js";const t={};function a(e,c){return r(),o("li",null,[n(e.$slots,"default")])}const _=Object.assign(s(t,[["render",a]]),{__name:"ProseLi"});export{_ as default};

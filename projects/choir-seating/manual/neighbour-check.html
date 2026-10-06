@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Neighbour check - Choir Seating Tool Manual</title>
+    <meta name="description" content="What alone, split and ↕ mean, how they show on the stage, and pointing at a problem to find it.">
+    <meta property="og:title" content="Neighbour check - Choir Seating Tool Manual">
+    <meta property="og:description" content="What alone, split and ↕ mean, how they show on the stage, and pointing at a problem to find it.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" type="image/svg+xml" href="../icon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="../icon-192.png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <link rel="stylesheet" href="manual.css">
+    <script src="../app-window.js"></script>
+  </head>
+  <body>
+    <div class="topbar">
+      <a href="https://jordanbarnes.uk/projects/choir-seating/about/" class="back-link"><span class="back-arrow" aria-hidden="true">←</span>About Choir Seating Tool</a>
+    </div>
+    <main class="manual-page">
+      <div class="manual-wrap">
+        <!-- The contents: a sidebar on a wide screen, a picker on a phone. -->
+        <nav class="toc" aria-label="Manual contents">
+          <p class="toctitle">Choir Seating Tool Manual</p>
+          <ol class="toclist">
+            <li><a href="getting-started.html">Getting started</a></li>
+            <li><a href="choir-setup.html">Choir setup</a></li>
+            <li><a href="the-stage.html">The stage</a></li>
+            <li><a href="arranging.html">Arranging</a></li>
+            <li><a href="neighbour-check.html" class="on" aria-current="page">Neighbour check</a></li>
+            <li><a href="seating-plans.html">Seating plans</a></li>
+            <li><a href="walk-on-order.html">Walk-on order</a></li>
+            <li><a href="print-and-export.html">Printing and export</a></li>
+            <li><a href="settings-and-backup.html">Settings and backup</a></li>
+          </ol>
+          <select class="tocpick" aria-label="Manual page" onchange="location.href = this.value">
+            <option value="getting-started.html">Getting started</option>
+            <option value="choir-setup.html">Choir setup</option>
+            <option value="the-stage.html">The stage</option>
+            <option value="arranging.html">Arranging</option>
+            <option value="neighbour-check.html" selected>Neighbour check</option>
+            <option value="seating-plans.html">Seating plans</option>
+            <option value="walk-on-order.html">Walk-on order</option>
+            <option value="print-and-export.html">Printing and export</option>
+            <option value="settings-and-backup.html">Settings and backup</option>
+          </select>
+          <a href="../" class="openapp">Open Choir Seating Tool →</a>
+        </nav>
+
+        <article class="doc">
+<h1 id="neighbour-check">Neighbour check</h1>
+<p>The neighbour check, under the stage, checks every section and every split on the real grid: left, right, in front and behind. Its header gives the answer even while it is folded away. It reads <strong>everyone has a neighbour</strong>, or says how many singers are alone and how many groups are split up.</p>
+<p><img src="report.png" alt="The neighbour check"></p>
+<p>There is one row per section and one column per split. Each cell shows what it found:</p>
+<table>
+<thead>
+<tr>
+<th>Mark</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>✓</strong></td>
+<td>Everyone in this section has a group-mate next to them in this split.</td>
+</tr>
+<tr>
+<td><strong>2 alone</strong></td>
+<td>Singers with nobody from their group beside, in front or behind. A problem.</td>
+</tr>
+<tr>
+<td><strong>split: 1st</strong></td>
+<td>That group is on stage in more than one separate piece. A problem.</td>
+</tr>
+<tr>
+<td><strong>↕ 3</strong></td>
+<td>Singers whose group-mates are only in front or behind, nobody beside. Allowed, just less comfortable to sing in.</td>
+</tr>
+</tbody>
+</table>
+<p>A group of one is never counted as alone, because there is nobody to sit them next to.</p>
+<h2 id="finding-them-on-the-stage"><a href="#finding-them-on-the-stage">Finding them on the stage</a></h2>
+<p><strong>Point at any entry</strong>, or tab to it with the keyboard, and the stage rings those singers and fades everyone else. For a split group, it rings the whole group, so you can see its separate pieces; a ↕ also rings the group-mates in front or behind; a ✓ rings the whole section. While you point, the stage is coloured and marked by that entry's split, whatever <strong>Colour by split</strong> is set to.</p>
+<p><strong>Click an entry</strong> to keep those singers marked while you scroll to the stage or move people around. A <strong>Marked</strong> pill above the stage names it; click its <strong>×</strong>, or the entry again, to let go.</p>
+<p><img src="report-hover.png" alt="Pointing at an entry rings those singers on the stage"></p>
+<p>The stage also marks problems all the time, for the section and for the split you are colouring by:</p>
+<ul>
+<li>A red outline and an <strong>alone</strong> tag: a singer with nobody from their group next to them.</li>
+<li>A dashed amber outline: a singer with group-mates only in front or behind. An arrow in the gap points from them to each of those group-mates, or ↕ when two such singers are each other's group-mate.</li>
+</ul>
+<p>Hover over a marked chair for what it means.</p>
+<h2 id="printing-it"><a href="#printing-it">Printing it</a></h2>
+<p>To add the check to the printed plan, tick <strong>Include the neighbour check</strong> in the print options. It prints on its own page, with the names written out.</p>
+
+          <footer class="pager"><a href="arranging.html" class="prev">← Arranging</a><a href="seating-plans.html" class="next">Seating plans →</a></footer>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>

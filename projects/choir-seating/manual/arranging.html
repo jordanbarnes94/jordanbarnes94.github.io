@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arranging - Choir Seating Tool Manual</title>
+    <meta name="description" content="Auto-arrange, section order, Compact, moving and locking singers, the waiting area, Block and Space.">
+    <meta property="og:title" content="Arranging - Choir Seating Tool Manual">
+    <meta property="og:description" content="Auto-arrange, section order, Compact, moving and locking singers, the waiting area, Block and Space.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" type="image/svg+xml" href="../icon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="../icon-192.png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <link rel="stylesheet" href="manual.css">
+    <script src="../app-window.js"></script>
+  </head>
+  <body>
+    <div class="topbar">
+      <a href="https://jordanbarnes.uk/projects/choir-seating/about/" class="back-link"><span class="back-arrow" aria-hidden="true">←</span>About Choir Seating Tool</a>
+    </div>
+    <main class="manual-page">
+      <div class="manual-wrap">
+        <!-- The contents: a sidebar on a wide screen, a picker on a phone. -->
+        <nav class="toc" aria-label="Manual contents">
+          <p class="toctitle">Choir Seating Tool Manual</p>
+          <ol class="toclist">
+            <li><a href="getting-started.html">Getting started</a></li>
+            <li><a href="choir-setup.html">Choir setup</a></li>
+            <li><a href="the-stage.html">The stage</a></li>
+            <li><a href="arranging.html" class="on" aria-current="page">Arranging</a></li>
+            <li><a href="neighbour-check.html">Neighbour check</a></li>
+            <li><a href="seating-plans.html">Seating plans</a></li>
+            <li><a href="walk-on-order.html">Walk-on order</a></li>
+            <li><a href="print-and-export.html">Printing and export</a></li>
+            <li><a href="settings-and-backup.html">Settings and backup</a></li>
+          </ol>
+          <select class="tocpick" aria-label="Manual page" onchange="location.href = this.value">
+            <option value="getting-started.html">Getting started</option>
+            <option value="choir-setup.html">Choir setup</option>
+            <option value="the-stage.html">The stage</option>
+            <option value="arranging.html" selected>Arranging</option>
+            <option value="neighbour-check.html">Neighbour check</option>
+            <option value="seating-plans.html">Seating plans</option>
+            <option value="walk-on-order.html">Walk-on order</option>
+            <option value="print-and-export.html">Printing and export</option>
+            <option value="settings-and-backup.html">Settings and backup</option>
+          </select>
+          <a href="../" class="openapp">Open Choir Seating Tool →</a>
+        </nav>
+
+        <article class="doc">
+<h1 id="arranging">Arranging</h1>
+<p><img src="arrange.png" alt="Auto-arrange, Compact and Section order"></p>
+<p><strong>Auto-arrange</strong> and <strong>Compact</strong> reseat singers as soon as you click them.</p>
+<h2 id="auto-arrange"><a href="#auto-arrange">↻ Auto-arrange</a></h2>
+<p>Auto-arrange seats everyone, including the waiting area, so that <strong>each singer has someone from each of their groups next to them</strong>: in their section, and in every split. It tries for a neighbour <strong>beside</strong> them, and settles for one in front or behind.</p>
+<ul>
+<li><strong>Locked singers</strong> stay in their chairs, and the arrangement works round them.</li>
+<li><strong>Blocked chairs</strong> stay where they are and are never sat in.</li>
+<li>If there aren't enough chairs, the extras stay in the waiting area.</li>
+<li>The same choir always gets the same result: same singers, splits, grid, locks and blocked chairs, same seating.</li>
+</ul>
+<p>A good way to work:</p>
+<ol>
+<li>Auto-arrange.</li>
+<li>Move the few people who must be somewhere in particular, like the soloist at the end or the tallest singers at the back.</li>
+<li><strong>Lock</strong> them.</li>
+<li>Auto-arrange again.</li>
+</ol>
+<h2 id="section-order"><a href="#section-order">Section order</a></h2>
+<p><strong>Section order</strong> is the order Auto-arrange puts the sections in, left to right as the audience sees the stage. The arrows on a section move it one place left or right. Changing it moves nobody until you next Auto-arrange.</p>
+<p>Section order is <strong>part of the seating plan</strong>, not a setting for the whole tool: each plan keeps its own, so two plans in one concert can stand in different orders. <strong>Duplicate</strong> copies it into the new plan.</p>
+<h2 id="compact"><a href="#compact">⇤ Compact</a></h2>
+<p>Compact closes up the gaps, packing everyone toward the front left. It keeps everyone in the same order, and locked singers and blocked chairs stay put. It doesn't try to improve anyone's neighbours. Use it after removing people, to tidy up without reshuffling.</p>
+<h2 id="moving-singers"><a href="#moving-singers">Moving singers</a></h2>
+<ul>
+<li><strong>Drag</strong> a singer onto another chair to swap them.</li>
+<li><strong>Click or tap</strong> a singer for a menu:
+<ul>
+<li><strong>Lock</strong> keeps them in that chair when you auto-arrange. Locked chairs show a 🔒 and a striped fill. Choose <strong>Unlock</strong> to release them.</li>
+<li><strong>Remove</strong> sends them to the waiting area.</li>
+</ul>
+</li>
+</ul>
+<p><img src="cell-menu.png" alt="A singer's menu"></p>
+<h2 id="the-waiting-area"><a href="#the-waiting-area">The waiting area</a></h2>
+<p>Under the stage, the waiting area holds singers in this concert who have no chair. Drag one onto a chair to seat them, or drag a seated singer here to take them off the stage. <strong>Auto-arrange</strong> seats everyone here if there are enough chairs.</p>
+<p><img src="waiting-area.png" alt="The waiting area"></p>
+<h2 id="block-and-space"><a href="#block-and-space">Block and Space</a></h2>
+<p><img src="insert.png" alt="Block and Space"></p>
+<p>Drag <span class="tool block">⊘ Block</span> or <span class="tool space">⇥ Space</span> onto a chair. The rest of that row moves one seat to the right. If there is no empty chair to take up the slack, the last singer in the row goes to the waiting area.</p>
+<ul>
+<li><strong>Space</strong> leaves an empty chair.</li>
+<li><strong>Block</strong> marks a spot nobody can sit in, like a pillar or an aisle. It stays put when you auto-arrange.</li>
+</ul>
+<p>Click or tap an empty or blocked chair to remove it and close the gap: the row moves back to the left.</p>
+<h2 id="checking-the-result"><a href="#checking-the-result">Checking the result</a></h2>
+<p>After arranging, look at the <a href="neighbour-check.html">Neighbour check</a> under the stage. With a sensible grid it usually says <strong>everyone has a neighbour</strong>. When the arranger can't manage that (a group of two in a choir split six ways, say), the check shows you who is affected.</p>
+
+          <footer class="pager"><a href="the-stage.html" class="prev">← The stage</a><a href="neighbour-check.html" class="next">Neighbour check →</a></footer>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>
