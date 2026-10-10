@@ -1,0 +1,1 @@
+import{_ as s,c as o,o as r,a1 as n}from"./Coaha3_a.js";const t={};function a(e,c){return r(),o("p",null,[n(e.$slots,"default")])}const l=Object.assign(s(t,[["render",a]]),{__name:"ProseP"});export{l as default};
